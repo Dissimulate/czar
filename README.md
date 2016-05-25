@@ -26,10 +26,8 @@ app.use('/', express.static(__dirname))
 /* 2. Initialise czar with your express instance. */
 const cms = new CMS(app)
 
-/*
-   3. Call start() with your configuration, it must be an array containing sections.
-  
-      The following example is enough to creat and edit simple blog posts.
+/* 3. Call start() with your configuration, it must be an array containing sections.
+      The following example is enough to create and edit simple blog posts.
 */
 cms.start([
   {
@@ -52,7 +50,9 @@ $.ajax({
   data: {
     from: 0,
     limit: 5,
-    filter: {} /* Optionally filter any properties. */
+    filter: {},      /* (Optional) filter any properties. */
+    sort: 'created', /* (Optional) sort by a property, defaults to creation time. */
+    order: 'desc'    /* (Optional) order in desc or asc order, defaults to desc. */
   }
 })
 .done(function(posts) {
