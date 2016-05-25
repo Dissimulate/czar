@@ -1,0 +1,30 @@
+{
+  "name": "czar",
+  "version": "1.0.1",
+  "description": "A light weight and robust CMS for node.js with dead simple integration.",
+  "main": "./app/server/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Adam Brooks",
+  "license": "ISC",
+  "dependencies": {
+    "babel-loader": "^6.2.4",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-react": "^6.5.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "body-parser": "^1.15.1",
+    "credential": "^1.0.0",
+    "express": "^4.13.4",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-nodemon": "^2.0.7",
+    "gulp-sass": "^2.3.1",
+    "lowdb": "^0.12.5",
+    "react": "^15.0.2",
+    "react-dom": "^15.0.2",
+    "react-router": "^2.4.0",
+    "webpack-stream": "^3.2.0",
+    "whatwg-fetch": "^1.0.0"
+  }
+}

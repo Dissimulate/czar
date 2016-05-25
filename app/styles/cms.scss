@@ -1,0 +1,113 @@
+@font-face {
+  font-family: 'Open Sans';
+  src: url('fonts/OpenSansregular.ttf');
+}
+
+$main: #89CAC3;
+$darker: #7DC5C0;
+
+* {
+  margin: 0;
+}
+
+body {
+  font-family: 'Open Sans', Helvetica, sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+.admin-tabs {
+  border-bottom: 18px solid $darker;
+  display: flex;
+
+  > a, > div {
+    display: inline-block;
+    cursor: pointer;
+    line-height: 3em;
+    height: 3em;
+    font-size: 1em;
+    color: #bbb;
+    padding: 0 2em;
+
+    &:not(.selected) {
+      border-right: 1px solid #eee;
+    }
+
+    &.selected {
+      color: #fff;
+      background: $main;
+    }
+  }
+}
+
+.admin-pages {
+  > div {
+    padding: 2em;
+
+    &:not(:first-child) {
+      display: none;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      font-size: 1em;
+      padding: 0.6em 0.8em;
+      border: 1px solid #ddd;
+
+      &:focus {
+        outline: none;
+      }
+    }
+
+    .button,
+    button {
+      font-size: 1em;
+      padding: 0.6em 0.8em;
+      border: 1px solid #ddd;
+      background: #eee;
+      cursor: pointer;
+      color: #888;
+
+      &:focus {
+        outline: none;
+      }
+    }
+
+    textarea {
+      min-height: 8em;
+    }
+  }
+}
+
+.item {
+  display: flex;
+  white-space: nowrap;
+  margin-bottom: 1em;
+  padding: 1em;
+  background: #fafafa;
+  border: 1px solid #eaeaea;
+  color: #666;
+  cursor: pointer;
+
+  div {
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    &:not(last-child) {
+      margin-right: 1em;
+    }
+  }
+}
+
+.wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.edit-button {
+  margin-right: 1em;
+}
