@@ -46,15 +46,15 @@ Fetch the data in the front end:
 ```javascript
 $.ajax({
   method: 'POST',
-  url: '/data/get/blog', /* /get-data/{page-name} */
+  url: '/data/get/blog', /* /data/get/{page-name} */
   dataType: 'json',
   data: {
-    from: 0,
-    limit: 5,
-    filter: {},      /* (Optional) filter any properties. */
-    sort: 'created', /* (Optional) sort by a property, defaults to creation time. */
-    order: 'desc'    /* (Optional) order in desc or asc order, defaults to desc. */
-    trunc: 100       /* (Optional) truncate the fields. */
+    from: 0,         /* (Optional) fetch items after an index */
+    limit: 5,        /* (Optional) maximum items to fetch */
+    filter: {},      /* (Optional) filter any properties */
+    sort: 'created', /* (Optional) sort by a property, defaults to creation time */
+    order: 'desc'    /* (Optional) order in desc or asc order, defaults to desc */
+    trunc: 100       /* (Optional) truncate the fields */
   }
 })
 .done(function(posts) {
