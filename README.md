@@ -1,6 +1,6 @@
 # czar
 
-A light weight and robust CMS for node.js with dead simple integration.
+A light weight and flexible CMS for node.js with dead simple integration.
 
 Include the module, start it up within your express server and everything is handled for you.
 
