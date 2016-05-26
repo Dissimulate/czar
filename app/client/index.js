@@ -29,10 +29,14 @@ class App extends React.Component {
           config
         }, () => {
           this.content().then(() => {
-            for (let i in this.state.config) {
-              if (this.state.config[i].name === this.props.params.page) {
-                this.tab(parseInt(i))
-                break
+            if (this.props.params.page === 'settings') {
+              this.tab(this.state.config.length)
+            } else {
+              for (let i in this.state.config) {
+                if (this.state.config[i].name === this.props.params.page) {
+                  this.tab(parseInt(i))
+                  break
+                }
               }
             }
 
@@ -139,6 +143,60 @@ class App extends React.Component {
     .then(() => window.location.reload())
   }
 
+  addUser () {
+    if (!this.refs.user.value ||
+        !this.refs.pass.value) {
+      return
+    }
+
+    window.fetch('/admin-add', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        user: this.refs.user.value,
+        pass: this.refs.pass.value
+      })
+    })
+    .then((response) => {
+      if (response.status === 200) {
+        window.location.reload()
+      } else {
+        this.setState({
+          error: 'Failed to add user.'
+        })
+      }
+    })
+  }
+
+  updateUser () {
+    if (!this.refs.pass1.value ||
+        this.refs.pass1.value !== this.refs.pass2.value) return
+
+    window.fetch('/admin-add', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        pass: this.refs.pass1.value,
+        update: true
+      })
+    })
+    .then((response) => {
+      if (response.status === 200) {
+        window.location.reload()
+      } else {
+        this.setState({
+          error: 'Failed to update user.'
+        })
+      }
+    })
+  }
+
   delete (page, i, e) {
     e.preventDefault()
     e.stopPropagation()
@@ -186,12 +244,13 @@ class App extends React.Component {
               </Link>
             )
           })}
-          <div
+          <Link
+            to={'/admin/settings'}
             className={this.state.config.length === this.state.tab ? 'selected' : ''}
             onClick={this.tab.bind(this, this.state.config.length)}
             key='settings'>
             settings
-          </div>
+          </Link>
         </div>
         <div className='admin-pages'>
           {page
@@ -286,15 +345,23 @@ class App extends React.Component {
             </div>)
             : (
             <div
-              className='wrapper'
+              className='wrapper settings'
               key='settings'>
+              <input ref='pass1' placeholder='new password' type='text' />
+              <input ref='pass2' placeholder='repeat' type='text' />
+              <button onClick={this.updateUser.bind(this)}>update</button>
               <br />
               <br />
-              <button
+              <input ref='user' placeholder='username' type='text' />
+              <input ref='pass' placeholder='password' type='text' />
+              <button onClick={this.addUser.bind(this)}>add user</button>
+              <br />
+              <br />
+              {/* <button
                 className='edit-button'
                 onClick={this.save.bind(this, 'settings')}>
                 save
-              </button>
+              </button> */}
               <button onClick={this.logout.bind(this)}>log out</button>
             </div>
             )}

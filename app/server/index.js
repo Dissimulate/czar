@@ -24,11 +24,11 @@ class CMS {
                req.connection.remoteAddress
 
     if (this.authed[ip]) {
-      if (Date.now() >= this.authed[ip]) {
+      if (Date.now() >= this.authed[ip].time) {
         delete this.authed[ip]
         return false
       } else {
-        this.authed[ip] = Date.now() + this.timeout
+        this.authed[ip].time = Date.now() + this.timeout
         return true
       }
     } else {
@@ -67,6 +67,10 @@ class CMS {
       )
     })
 
+    this.app.get('/data/pages', (req, res) => {
+      res.json(this.config)
+    })
+
     this.app.post('/data/get/:page', jsonParser, (req, res) => {
       const post =
       this.data(req.params.page)
@@ -75,6 +79,16 @@ class CMS {
           .orderBy(req.body.sort || 'created', [req.body.order || 'desc'])
           .splice(req.body.from || 0, req.body.limit || Infinity)
           .value()
+
+      if (req.body.trunc) {
+        post.forEach((page) => {
+          Object.keys(page).forEach((key) => {
+            if (page[key].length > req.body.trunc) {
+              page[key] = page[key].substring(0, req.body.trunc) + '...'
+            }
+          })
+        })
+      }
 
       res.json(post)
     })
@@ -86,11 +100,11 @@ class CMS {
                req.connection.remoteAddress
 
       if (this.authed[ip]) {
-        if (Date.now() >= this.authed[ip]) {
+        if (Date.now() >= this.authed[ip].time) {
           delete this.authed[ip]
           return
         } else {
-          this.authed[ip] = Date.now() + this.timeout
+          this.authed[ip].time = Date.now() + this.timeout
         }
       } else return res.sendStatus(403)
 
@@ -118,11 +132,11 @@ class CMS {
                req.connection.remoteAddress
 
       if (this.authed[ip]) {
-        if (Date.now() >= this.authed[ip]) {
+        if (Date.now() >= this.authed[ip].time) {
           delete this.authed[ip]
           return
         } else {
-          this.authed[ip] = Date.now() + this.timeout
+          this.authed[ip].time = Date.now() + this.timeout
         }
       } else return res.sendStatus(403)
 
@@ -142,7 +156,8 @@ class CMS {
         if (err) throw err
 
         if (isValid) {
-          this.authed[ip] = Date.now() + this.timeout
+          this.authed[ip] = {user: req.body.user}
+          this.authed[ip].time = Date.now() + this.timeout
           res.sendStatus(200)
         } else {
           res.sendStatus(400)
@@ -166,18 +181,31 @@ class CMS {
                req.connection.remoteAddress
 
       if (this.authed[ip]) {
-        if (Date.now() >= this.authed[ip]) {
+        if (Date.now() >= this.authed[ip].time) {
           delete this.authed[ip]
           return
         } else {
-          this.authed[ip] = Date.now() + this.timeout
+          this.authed[ip].time = Date.now() + this.timeout
         }
       } else if (this.users('account').find({})) {
         return res.sendStatus(403)
       }
 
+      if (req.body.update) {
+        req.body.user = this.authed[ip].user
+      }
+
+      if (this.users('account').find({user: req.body.user})) {
+        if (!req.body.update) return res.sendStatus(403)
+      }
+
       pw.hash(req.body.pass, (err, hash) => {
         if (err) throw err
+
+        if (req.body.update) {
+          this.users('account')
+              .remove({user: req.body.user})
+        }
 
         this.users('account').push({
           user: req.body.user,
@@ -186,10 +214,6 @@ class CMS {
 
         res.sendStatus(200)
       })
-    })
-
-    this.app.get('/data/pages', (req, res) => {
-      res.json(this.config)
     })
   }
 }

@@ -74,7 +74,8 @@ button {
   background: #fafafa;
   border: 1px solid #eaeaea;
   color: #666;
-  cursor: pointer; }
+  cursor: pointer;
+  position: relative; }
   .item div {
     display: inline-block;
     text-overflow: ellipsis;
@@ -117,3 +118,24 @@ button {
     .admin-login > div h4 {
       color: #aaa;
       font-size: 1.5em; }
+
+.cross {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  right: -14px;
+  color: rgba(0, 0, 0, 0.3);
+  -webkit-transition: color 0.4s ease;
+  transition: color 0.4s ease; }
+  .cross:hover {
+    color: #f44; }
+
+.settings input {
+  width: 200px !important;
+  padding: 0.5em;
+  font-size: 1em;
+  vertical-align: middle;
+  margin-right: 1em; }

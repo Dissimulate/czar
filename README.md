@@ -55,6 +55,7 @@ $.ajax({
     filter: {},      /* (Optional) filter any properties. */
     sort: 'created', /* (Optional) sort by a property, defaults to creation time. */
     order: 'desc'    /* (Optional) order in desc or asc order, defaults to desc. */
+    trunc: 100       /* (Optional) truncate the fields. */
   }
 })
 .done(function(posts) {

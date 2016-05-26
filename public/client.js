@@ -99,10 +99,14 @@
 	          config: config
 	        }, function () {
 	          _this2.content().then(function () {
-	            for (var i in _this2.state.config) {
-	              if (_this2.state.config[i].name === _this2.props.params.page) {
-	                _this2.tab(parseInt(i));
-	                break;
+	            if (_this2.props.params.page === 'settings') {
+	              _this2.tab(_this2.state.config.length);
+	            } else {
+	              for (var i in _this2.state.config) {
+	                if (_this2.state.config[i].name === _this2.props.params.page) {
+	                  _this2.tab(parseInt(i));
+	                  break;
+	                }
 	              }
 	            }
 
@@ -211,9 +215,101 @@
 	      });
 	    }
 	  }, {
+	    key: 'logout',
+	    value: function logout() {
+	      window.fetch('/admin-logout', {
+	        method: 'GET'
+	      }).then(function () {
+	        return window.location.reload();
+	      });
+	    }
+	  }, {
+	    key: 'addUser',
+	    value: function addUser() {
+	      var _this6 = this;
+
+	      if (!this.refs.user.value || !this.refs.pass.value) {
+	        return;
+	      }
+
+	      window.fetch('/admin-add', {
+	        method: 'POST',
+	        headers: {
+	          'Accept': 'application/json',
+	          'Content-Type': 'application/json'
+	        },
+	        body: JSON.stringify({
+	          user: this.refs.user.value,
+	          pass: this.refs.pass.value
+	        })
+	      }).then(function (response) {
+	        if (response.status === 200) {
+	          window.location.reload();
+	        } else {
+	          _this6.setState({
+	            error: 'Failed to add user.'
+	          });
+	        }
+	      });
+	    }
+	  }, {
+	    key: 'updateUser',
+	    value: function updateUser() {
+	      var _this7 = this;
+
+	      if (!this.refs.pass1.value || this.refs.pass1.value !== this.refs.pass2.value) return;
+
+	      window.fetch('/admin-add', {
+	        method: 'POST',
+	        headers: {
+	          'Accept': 'application/json',
+	          'Content-Type': 'application/json'
+	        },
+	        body: JSON.stringify({
+	          pass: this.refs.pass1.value,
+	          update: true
+	        })
+	      }).then(function (response) {
+	        if (response.status === 200) {
+	          window.location.reload();
+	        } else {
+	          _this7.setState({
+	            error: 'Failed to update user.'
+	          });
+	        }
+	      });
+	    }
+	  }, {
+	    key: 'delete',
+	    value: function _delete(page, i, e) {
+	      e.preventDefault();
+	      e.stopPropagation();
+
+	      window.fetch('/data/delete', {
+	        method: 'POST',
+	        headers: {
+	          'Accept': 'application/json',
+	          'Content-Type': 'application/json'
+	        },
+	        body: JSON.stringify({
+	          page: page,
+	          created: this.state.content[i].created
+	        })
+	      });
+
+	      this.state.content.splice(i, 1);
+
+	      this.setState({
+	        content: this.state.content,
+	        edit: -1
+	      });
+
+	      _reactRouter.browserHistory.push('/admin/' + this.props.params.page);
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _this6 = this;
+	      var _this8 = this;
 
 	      var page = this.state.config[this.state.tab];
 
@@ -232,15 +328,16 @@
 	              _reactRouter.Link,
 	              {
 	                to: '/admin/' + page.name,
-	                className: _this6.state.tab === i ? 'selected' : '',
-	                onClick: _this6.tab.bind(_this6, i),
+	                className: _this8.state.tab === i ? 'selected' : '',
+	                onClick: _this8.tab.bind(_this8, i),
 	                key: i },
 	              page.name
 	            );
 	          }),
 	          _react2.default.createElement(
-	            'div',
+	            _reactRouter.Link,
 	            {
+	              to: '/admin/settings',
 	              className: this.state.config.length === this.state.tab ? 'selected' : '',
 	              onClick: this.tab.bind(this, this.state.config.length),
 	              key: 'settings' },
@@ -256,18 +353,18 @@
 	              className: 'wrapper',
 	              style: {},
 	              key: page.name },
-	            page.fields.map(function (field) {
+	            page.fields.map(function (field, i) {
 	              return _react2.default.createElement(
 	                'div',
-	                { key: field.name + '_' + _this6.state.edit },
+	                { key: i + _this8.state.edit + _this8.state.content.length },
 	                _react2.default.createElement('br', null),
 	                field.type === 'textarea' ? _react2.default.createElement('textarea', {
-	                  defaultValue: _this6.state.content.length && _this6.state.edit > -1 ? _this6.state.content[_this6.state.edit][field.name] : '',
-	                  disabled: _this6.state.posting,
+	                  defaultValue: _this8.state.content[_this8.state.edit] && _this8.state.edit > -1 ? _this8.state.content[_this8.state.edit][field.name] : '',
+	                  disabled: _this8.state.posting,
 	                  ref: field.name,
 	                  placeholder: field.name }) : _react2.default.createElement('input', {
-	                  defaultValue: _this6.state.content.length && _this6.state.edit > -1 ? _this6.state.content[_this6.state.edit][field.name] : '',
-	                  disabled: _this6.state.posting,
+	                  defaultValue: _this8.state.content[_this8.state.edit] && _this8.state.edit > -1 ? _this8.state.content[_this8.state.edit][field.name] : '',
+	                  disabled: _this8.state.posting,
 	                  type: field.type,
 	                  ref: field.name,
 	                  placeholder: field.name }),
@@ -308,7 +405,7 @@
 	                  _reactRouter.Link,
 	                  {
 	                    to: '/admin/' + page.name + '/' + i,
-	                    onClick: _this6.edit.bind(_this6, i),
+	                    onClick: _this8.edit.bind(_this8, i),
 	                    className: 'item', key: i },
 	                  Object.keys(item).map(function (key) {
 	                    if (key !== 'created' && key !== 'published') {
@@ -320,7 +417,14 @@
 	                        item[key]
 	                      );
 	                    }
-	                  })
+	                  }),
+	                  _react2.default.createElement(
+	                    'div',
+	                    {
+	                      onClick: _this8.delete.bind(_this8, page.name, i),
+	                      className: 'cross' },
+	                    '×'
+	                  )
 	                );
 	              }),
 	              this.state.more && _react2.default.createElement(
@@ -336,15 +440,30 @@
 	          ) : _react2.default.createElement(
 	            'div',
 	            {
-	              className: 'wrapper',
+	              className: 'wrapper settings',
 	              key: 'settings' },
-	            '1',
+	            _react2.default.createElement('input', { ref: 'pass1', placeholder: 'new password', type: 'text' }),
+	            _react2.default.createElement('input', { ref: 'pass2', placeholder: 'repeat', type: 'text' }),
+	            _react2.default.createElement(
+	              'button',
+	              { onClick: this.updateUser.bind(this) },
+	              'update'
+	            ),
+	            _react2.default.createElement('br', null),
+	            _react2.default.createElement('br', null),
+	            _react2.default.createElement('input', { ref: 'user', placeholder: 'username', type: 'text' }),
+	            _react2.default.createElement('input', { ref: 'pass', placeholder: 'password', type: 'text' }),
+	            _react2.default.createElement(
+	              'button',
+	              { onClick: this.addUser.bind(this) },
+	              'add user'
+	            ),
 	            _react2.default.createElement('br', null),
 	            _react2.default.createElement('br', null),
 	            _react2.default.createElement(
 	              'button',
-	              { onClick: this.save.bind(this, 'settings') },
-	              'save'
+	              { onClick: this.logout.bind(this) },
+	              'log out'
 	            )
 	          )
 	        )

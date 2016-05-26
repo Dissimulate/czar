@@ -72,13 +72,17 @@
 
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(App).call(this));
 
-	    _this.state = {};
+	    _this.state = {
+	      error: ''
+	    };
 	    return _this;
 	  }
 
 	  _createClass(App, [{
 	    key: 'login',
 	    value: function login() {
+	      var _this2 = this;
+
 	      window.fetch(window.signup ? '/admin-add' : '/admin-login', {
 	        method: 'POST',
 	        headers: {
@@ -90,7 +94,13 @@
 	          pass: this.refs.pass.value
 	        })
 	      }).then(function (response) {
-	        console.log(response);
+	        if (response.status === 200) {
+	          window.location.reload();
+	        } else {
+	          _this2.setState({
+	            error: 'Sign-in failed.'
+	          });
+	        }
 	      });
 	    }
 	  }, {
@@ -99,6 +109,11 @@
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'admin-login' },
+	        this.state.error && _react2.default.createElement(
+	          'span',
+	          null,
+	          this.state.error
+	        ),
 	        _react2.default.createElement(
 	          'div',
 	          null,
