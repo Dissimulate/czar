@@ -4,6 +4,8 @@ A light weight and robust CMS for node.js with dead simple integration.
 
 Just include the module, start it up within your express server and everything is handled for you. It can be as simple as you like.
 
+![alt tag](http://i.imgur.com/LpNxVnU.png)
+
 
 ## install
 
