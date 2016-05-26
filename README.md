@@ -1,6 +1,8 @@
 # czar
 
-A light weight and robust CMS for node.js with dead simple integration. Just include the module and start it up with some simple configuration.
+A light weight and robust CMS for node.js with dead simple integration.
+
+Just include the module, start it up within your express server and everything is handled for you. It can be as simple as you like.
 
 
 ## install
@@ -12,11 +14,11 @@ A light weight and robust CMS for node.js with dead simple integration. Just inc
 Configure your server:
 
 ```javascript
-import express from 'express'
-import path from 'path'
+const express = require('express')
+const path = require('path')
 
 /* 1. Include the module. */
-import CMS from 'czar'
+const CMS = require('czar')
 
 const app = express()
 const port = 8080
@@ -29,16 +31,16 @@ const cms = new CMS(app)
 /* 3. Call start() with your configuration, it must be an array containing sections.
       The following example is enough to create and edit simple blog posts.
 */
-cms.start([
-  {
-    name: 'blog',
-    fields: [
-      {type: 'text', name: 'title'},
-      {type: 'textarea', name: 'body'}
-    ]
-  }
-])
+cms.start([{
+  name: 'blog',
+  fields: [
+    {type: 'text', name: 'title'},
+    {type: 'textarea', name: 'body'}
+  ]
+}])
 ```
+
+Visit `yoursite.com/admin`, create an admin login and manage your items.
 
 Fetch the data in the front end:
 
