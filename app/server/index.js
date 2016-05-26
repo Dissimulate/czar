@@ -16,7 +16,7 @@ class CMS {
     this.data = low(database || 'data.json', {storage})
     this.users = low('users.json', {storage})
     this.authed = {}
-    this.timeout = 2000000
+    this.timeout = 600000
   }
 
   checkLogin (req, res) {
