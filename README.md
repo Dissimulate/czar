@@ -23,9 +23,6 @@ const path = require('path')
 const CMS = require('czar')
 
 const app = express()
-const port = 8080
-
-app.use('/', express.static(__dirname))
 
 /* 2. Initialise czar with your express instance. */
 const cms = new CMS(app)
