@@ -49,7 +49,7 @@ Fetch the data in the front end:
 ```javascript
 $.ajax({
   method: 'POST',
-  url: '/get-data/blog', /* /get-data/{page-name} */
+  url: '/data/get/blog', /* /get-data/{page-name} */
   dataType: 'json',
   data: {
     from: 0,
