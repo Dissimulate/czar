@@ -44,19 +44,24 @@ a {
     .admin-pages > div input[type="text"]:focus,
     .admin-pages > div textarea:focus {
       outline: none; }
-  .admin-pages > div .button,
-  .admin-pages > div button {
-    font-size: 1em;
-    padding: 0.6em 0.8em;
-    border: 1px solid #ddd;
-    background: #eee;
-    cursor: pointer;
-    color: #888; }
-    .admin-pages > div .button:focus,
-    .admin-pages > div button:focus {
-      outline: none; }
   .admin-pages > div textarea {
-    min-height: 8em; }
+    min-height: 8em;
+    resize: vertical; }
+
+.button,
+button {
+  font-size: 1em;
+  padding: 0.6em 0.8em;
+  border: 1px solid #ddd;
+  background: #eee;
+  cursor: pointer;
+  color: #888;
+  line-height: 100%;
+  display: inline-block;
+  vertical-align: middle; }
+  .button:focus,
+  button:focus {
+    outline: none; }
 
 .item {
   display: -webkit-box;
@@ -83,3 +88,32 @@ a {
 
 .edit-button {
   margin-right: 1em; }
+
+.admin-login {
+  width: 100%;
+  height: 100%;
+  background: #89CAC3; }
+  .admin-login > div {
+    width: 400px;
+    height: 220px;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    background: #fff;
+    border: 1px solid #7DC5C0;
+    padding: 1em; }
+    .admin-login > div input {
+      padding: 0.8em 1.2em;
+      font-size: 0.8em;
+      border: 1px solid #eaeaea;
+      width: 100%;
+      margin: 1.8em 0 0 0; }
+    .admin-login > div button {
+      margin-top: 1em; }
+    .admin-login > div h4 {
+      color: #aaa;
+      font-size: 1.5em; }

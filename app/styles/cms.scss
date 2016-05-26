@@ -62,23 +62,27 @@ a {
       }
     }
 
-    .button,
-    button {
-      font-size: 1em;
-      padding: 0.6em 0.8em;
-      border: 1px solid #ddd;
-      background: #eee;
-      cursor: pointer;
-      color: #888;
-
-      &:focus {
-        outline: none;
-      }
-    }
-
     textarea {
       min-height: 8em;
+      resize: vertical;
     }
+  }
+}
+
+.button,
+button {
+  font-size: 1em;
+  padding: 0.6em 0.8em;
+  border: 1px solid #ddd;
+  background: #eee;
+  cursor: pointer;
+  color: #888;
+  line-height: 100%;
+  display: inline-block;
+  vertical-align: middle;
+
+  &:focus {
+    outline: none;
   }
 }
 
@@ -91,6 +95,7 @@ a {
   border: 1px solid #eaeaea;
   color: #666;
   cursor: pointer;
+  position: relative;
 
   div {
     display: inline-block;
@@ -110,4 +115,58 @@ a {
 
 .edit-button {
   margin-right: 1em;
+}
+
+.admin-login {
+  width: 100%;
+  height: 100%;
+  background: $main;
+
+  > div {
+    width: 400px;
+    height: 220px;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    background: #fff;
+    border: 1px solid $darker;
+    padding: 1em;
+
+    input {
+      padding: 0.8em 1.2em;
+      font-size: 0.8em;
+      border: 1px solid #eaeaea;
+      width: 100%;
+      margin: 1.8em 0 0 0;
+    }
+
+    button {
+      margin-top: 1em;
+    }
+
+    h4 {
+      color: #aaa;
+      font-size: 1.5em;
+    }
+  }
+}
+
+.cross {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  right: -14px;
+  color: rgba(0,0,0,0.3);
+  transition: color 0.4s ease;
+
+  &:hover {
+    color: #f44;
+  }
 }

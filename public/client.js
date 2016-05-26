@@ -92,7 +92,7 @@
 	    value: function componentDidMount() {
 	      var _this2 = this;
 
-	      window.fetch('/data-pages').then(function (response) {
+	      window.fetch('/data/pages').then(function (response) {
 	        return response.json();
 	      }).then(function (config) {
 	        _this2.setState({
@@ -168,7 +168,9 @@
 	        loading: true
 	      });
 
-	      return window.fetch('/get-data/' + this.state.config[this.state.tab].name, {
+	      var url = '/data/get/' + this.state.config[this.state.tab].name;
+
+	      return window.fetch(url, {
 	        method: 'POST',
 	        headers: {
 	          'Accept': 'application/json',
@@ -305,7 +307,7 @@
 	                return _react2.default.createElement(
 	                  _reactRouter.Link,
 	                  {
-	                    to: '/admin/' + _this6.props.params.page + '/' + i,
+	                    to: '/admin/' + page.name + '/' + i,
 	                    onClick: _this6.edit.bind(_this6, i),
 	                    className: 'item', key: i },
 	                  Object.keys(item).map(function (key) {

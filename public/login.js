@@ -98,23 +98,25 @@
 	    value: function render() {
 	      return _react2.default.createElement(
 	        'div',
-	        null,
+	        { className: 'admin-login' },
 	        _react2.default.createElement(
-	          'h4',
+	          'div',
 	          null,
-	          'Please sign ',
-	          window.signup ? 'up' : 'in'
-	        ),
-	        _react2.default.createElement('input', { ref: 'user', type: 'text', placeholder: 'user' }),
-	        _react2.default.createElement('br', null),
-	        _react2.default.createElement('br', null),
-	        _react2.default.createElement('input', { ref: 'pass', type: 'password', placeholder: 'password' }),
-	        _react2.default.createElement('br', null),
-	        _react2.default.createElement('br', null),
-	        _react2.default.createElement(
-	          'button',
-	          { onClick: this.login.bind(this) },
-	          'login'
+	          _react2.default.createElement(
+	            'h4',
+	            null,
+	            'sign ',
+	            window.signup ? 'up' : 'in'
+	          ),
+	          _react2.default.createElement('input', { ref: 'user', type: 'text', placeholder: 'user' }),
+	          _react2.default.createElement('br', null),
+	          _react2.default.createElement('input', { ref: 'pass', type: 'password', placeholder: 'password' }),
+	          _react2.default.createElement('br', null),
+	          _react2.default.createElement(
+	            'button',
+	            { className: 'button', onClick: this.login.bind(this) },
+	            'login'
+	          )
 	        )
 	      );
 	    }

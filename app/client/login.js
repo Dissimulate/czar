@@ -7,6 +7,7 @@ class App extends React.Component {
     super()
 
     this.state = {
+      error: ''
     }
   }
 
@@ -23,21 +24,28 @@ class App extends React.Component {
       })
     })
     .then((response) => {
-      console.log(response)
+      if (response.status === 200) {
+        window.location.reload()
+      } else {
+        this.setState({
+          error: 'Sign-in failed.'
+        })
+      }
     })
   }
 
   render () {
     return (
-      <div>
-        <h4>Please sign {window.signup ? 'up' : 'in'}</h4>
-        <input ref='user' type='text' placeholder='user' />
-        <br />
-        <br />
-        <input ref='pass' type='password' placeholder='password' />
-        <br />
-        <br />
-        <button onClick={this.login.bind(this)}>login</button>
+      <div className='admin-login'>
+        {this.state.error && <span>{this.state.error}</span>}
+        <div>
+          <h4>sign {window.signup ? 'up' : 'in'}</h4>
+          <input ref='user' type='text' placeholder='user' />
+          <br />
+          <input ref='pass' type='password' placeholder='password' />
+          <br />
+          <button className='button' onClick={this.login.bind(this)}>login</button>
+        </div>
       </div>
     )
   }

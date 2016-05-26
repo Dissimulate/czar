@@ -20,7 +20,7 @@ class App extends React.Component {
   }
 
   componentDidMount () {
-    window.fetch('/data-pages')
+    window.fetch('/data/pages')
       .then((response) => {
         return response.json()
       })
@@ -93,7 +93,9 @@ class App extends React.Component {
       loading: true
     })
 
-    return window.fetch(`/get-data/${this.state.config[this.state.tab].name}`, {
+    const url = `/data/get/${this.state.config[this.state.tab].name}`
+
+    return window.fetch(url, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -128,6 +130,39 @@ class App extends React.Component {
     this.setState({
       edit
     })
+  }
+
+  logout () {
+    window.fetch('/admin-logout', {
+      method: 'GET'
+    })
+    .then(() => window.location.reload())
+  }
+
+  delete (page, i, e) {
+    e.preventDefault()
+    e.stopPropagation()
+
+    window.fetch('/data/delete', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        page: page,
+        created: this.state.content[i].created
+      })
+    })
+
+    this.state.content.splice(i, 1)
+
+    this.setState({
+      content: this.state.content,
+      edit: -1
+    })
+
+    browserHistory.push(`/admin/${this.props.params.page}`)
   }
 
   render () {
@@ -165,14 +200,14 @@ class App extends React.Component {
               className='wrapper'
               style={{}}
               key={page.name}>
-              {page.fields.map((field) => {
+              {page.fields.map((field, i) => {
                 return (
-                  <div key={field.name + '_' + this.state.edit}>
+                  <div key={i + this.state.edit + this.state.content.length}>
                     <br />
                     {field.type === 'textarea'
                       ? <textarea
                         defaultValue={
-                          this.state.content.length && this.state.edit > -1
+                          this.state.content[this.state.edit] && this.state.edit > -1
                             ? this.state.content[this.state.edit][field.name]
                             : ''
                           }
@@ -182,7 +217,7 @@ class App extends React.Component {
                       </textarea>
                       : <input
                         defaultValue={
-                          this.state.content.length && this.state.edit > -1
+                          this.state.content[this.state.edit] && this.state.edit > -1
                             ? this.state.content[this.state.edit][field.name]
                             : ''
                           }
@@ -224,7 +259,7 @@ class App extends React.Component {
                   {this.state.content.map((item, i) => {
                     return (
                       <Link
-                        to={`/admin/${this.props.params.page}/${i}`}
+                        to={`/admin/${page.name}/${i}`}
                         onClick={this.edit.bind(this, i)}
                         className='item' key={i}>
                         {Object.keys(item).map((key) => {
@@ -232,6 +267,11 @@ class App extends React.Component {
                             return <div key={key}>{key}: {item[key]}</div>
                           }
                         })}
+                        <div
+                          onClick={this.delete.bind(this, page.name, i)}
+                          className='cross'>
+                          &times;
+                        </div>
                       </Link>
                     )
                   })}
@@ -248,12 +288,14 @@ class App extends React.Component {
             <div
               className='wrapper'
               key='settings'>
-              1
               <br />
               <br />
-              <button onClick={this.save.bind(this, 'settings')}>
+              <button
+                className='edit-button'
+                onClick={this.save.bind(this, 'settings')}>
                 save
               </button>
+              <button onClick={this.logout.bind(this)}>log out</button>
             </div>
             )}
         </div>
