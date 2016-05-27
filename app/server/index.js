@@ -19,6 +19,7 @@ class CMS {
     this.timeout = 180000
   }
 
+  /* check if user has a valid login */
   checkLogin (req, res, redirect) {
     const ip = req.headers['x-forwarded-for'] ||
                req.connection.remoteAddress
@@ -27,26 +28,24 @@ class CMS {
       if (Date.now() >= this.authed[ip].time) {
         delete this.authed[ip]
         return false
-      } else {
-        this.authed[ip].time = Date.now() + this.timeout
-        return true
       }
+      this.authed[ip].time = Date.now() + this.timeout
+      return true
     } else if (redirect) {
-      if (this.users('account').find({})) {
-        res.sendFile(
-          path.resolve(__dirname, '../../public/login.html')
+      const first = !this.users('account').find({})
+
+      res.sendFile(
+        path.resolve(__dirname, first
+          ? '../../public/signup.html'
+          : '../../public/login.html'
         )
-      } else {
-        res.sendFile(
-          path.resolve(__dirname, '../../public/signup.html')
-        )
-      }
+      )
+
       return false
-    } else {
-      return false
-    }
+    } else return false
   }
 
+  /* set up routes */
   start (config) {
     this.config = config
 
@@ -55,6 +54,7 @@ class CMS {
       express.static(path.resolve(__dirname, '../../public'))
     )
 
+    /* main route */
     this.app.get('/admin', (req, res) => {
       this.checkLogin(req, res, true) &&
       res.sendFile(
@@ -62,6 +62,7 @@ class CMS {
       )
     })
 
+    /* fall back to index.html */
     this.app.get('/admin/*', (req, res) => {
       this.checkLogin(req, res, true) &&
       res.sendFile(
@@ -69,10 +70,12 @@ class CMS {
       )
     })
 
+    /* list configured pages */
     this.app.get('/data/pages', (req, res) => {
       res.json(this.config)
     })
 
+    /* get page data */
     this.app.post('/data/get/:page', jsonParser, (req, res) => {
       let post =
       this.data(req.params.page)
@@ -97,20 +100,13 @@ class CMS {
       res.json(post)
     })
 
+    /* save data to page */
     this.app.post('/data/save', jsonParser, (req, res) => {
       if (!req.body) return res.sendStatus(400)
 
-      let ip = req.headers['x-forwarded-for'] ||
-               req.connection.remoteAddress
-
-      if (this.authed[ip]) {
-        if (Date.now() >= this.authed[ip].time) {
-          delete this.authed[ip]
-          return
-        } else {
-          this.authed[ip].time = Date.now() + this.timeout
-        }
-      } else return res.sendStatus(403)
+      if (!this.checkLogin(req)) {
+        return res.sendStatus(403)
+      }
 
       if (req.body.update) {
         this.data(req.body.name)
@@ -129,25 +125,19 @@ class CMS {
       }
     })
 
+    /* delete item(s) from page */
     this.app.post('/data/delete', jsonParser, (req, res) => {
       if (!req.body) return res.sendStatus(400)
 
-      let ip = req.headers['x-forwarded-for'] ||
-               req.connection.remoteAddress
-
-      if (this.authed[ip]) {
-        if (Date.now() >= this.authed[ip].time) {
-          delete this.authed[ip]
-          return
-        } else {
-          this.authed[ip].time = Date.now() + this.timeout
-        }
-      } else return res.sendStatus(403)
+      if (!this.checkLogin(req)) {
+        return res.sendStatus(403)
+      }
 
       this.data(req.body.page)
           .remove({created: req.body.created})
     })
 
+    /* perform login */
     this.app.post('/admin-login', jsonParser, (req, res) => {
       if (!req.body) return res.sendStatus(400)
 
@@ -162,13 +152,14 @@ class CMS {
         if (isValid) {
           this.authed[ip] = {user: req.body.user}
           this.authed[ip].time = Date.now() + this.timeout
-          res.sendStatus(200)
-        } else {
-          res.sendStatus(400)
+          return res.sendStatus(200)
         }
+
+        return res.sendStatus(400)
       })
     })
 
+    /* perform logout */
     this.app.get('/admin-logout', (req, res) => {
       let ip = req.headers['x-forwarded-for'] ||
                req.connection.remoteAddress
@@ -178,20 +169,15 @@ class CMS {
       res.sendStatus(200)
     })
 
+    /* add new admin user */
     this.app.post('/admin-add', jsonParser, (req, res) => {
       if (!req.body) return res.sendStatus(400)
 
       let ip = req.headers['x-forwarded-for'] ||
                req.connection.remoteAddress
 
-      if (this.authed[ip]) {
-        if (Date.now() >= this.authed[ip].time) {
-          delete this.authed[ip]
-          return
-        } else {
-          this.authed[ip].time = Date.now() + this.timeout
-        }
-      } else if (this.users('account').find({})) {
+      if (!this.checkLogin(req) &&
+          this.users('account').find({})) {
         return res.sendStatus(403)
       }
 
@@ -223,6 +209,7 @@ class CMS {
       })
     })
 
+    /* list admin users */
     this.app.get('/admin-list', (req, res) => {
       if (!this.checkLogin(req, res)) {
         return res.sendStatus(403)
@@ -233,6 +220,7 @@ class CMS {
       res.json(users)
     })
 
+    /* delete admin user */
     this.app.post('/admin-delete', jsonParser, (req, res) => {
       if (!this.checkLogin(req, res)) {
         return res.sendStatus(403)
@@ -240,12 +228,11 @@ class CMS {
 
       let user = this.users('account').find({user: req.body.user})
 
+      /* prevent deletion of primary user */
       if (!user.first) {
         this.users('account').remove({user: req.body.user})
         return res.sendStatus(200)
-      } else {
-        return res.sendStatus(403)
-      }
+      } else return res.sendStatus(403)
     })
   }
 }

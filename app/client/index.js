@@ -3,6 +3,8 @@ import {render} from 'react-dom'
 import {browserHistory, Router, Route, Link} from 'react-router'
 import 'whatwg-fetch'
 
+import Settings from './components/settings'
+
 class App extends React.Component {
   constructor () {
     super()
@@ -15,8 +17,7 @@ class App extends React.Component {
       posting: false,
       more: true,
       edit: -1,
-      tab: 0,
-      admins: []
+      tab: 0
     }
   }
 
@@ -124,20 +125,6 @@ class App extends React.Component {
     })
   }
 
-  getAdmins () {
-    return window.fetch('/admin-list', {
-      method: 'GET'
-    })
-    .then((response) => {
-      return response.json()
-    })
-    .then((admins) => {
-      this.setState({
-        admins: admins
-      })
-    })
-  }
-
   tab (tab) {
     this.setState({
       tab,
@@ -152,67 +139,6 @@ class App extends React.Component {
   edit (edit) {
     this.setState({
       edit
-    })
-  }
-
-  logout () {
-    window.fetch('/admin-logout', {
-      method: 'GET'
-    })
-    .then(() => window.location.reload())
-  }
-
-  addUser () {
-    if (!this.refs.user.value ||
-        !this.refs.pass.value) {
-      return
-    }
-
-    window.fetch('/admin-add', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        user: this.refs.user.value,
-        pass: this.refs.pass.value
-      })
-    })
-    .then((response) => {
-      if (response.status === 200) {
-        window.location.reload()
-      } else {
-        this.setState({
-          error: 'Failed to add user.'
-        })
-      }
-    })
-  }
-
-  updateUser () {
-    if (!this.refs.pass1.value ||
-        this.refs.pass1.value !== this.refs.pass2.value) return
-
-    window.fetch('/admin-add', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        pass: this.refs.pass1.value,
-        update: true
-      })
-    })
-    .then((response) => {
-      if (response.status === 200) {
-        window.location.reload()
-      } else {
-        this.setState({
-          error: 'Failed to update user.'
-        })
-      }
     })
   }
 
@@ -240,28 +166,6 @@ class App extends React.Component {
     })
 
     browserHistory.push(`/admin/${this.props.params.page}`)
-  }
-
-  deleteAdmin (admin) {
-    window.fetch('/admin-delete', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        user: admin
-      })
-    })
-    .then((response) => {
-      if (response.status === 200) {
-        window.location.reload()
-      } else {
-        this.setState({
-          error: 'Failed to delete user.'
-        })
-      }
-    })
   }
 
   render () {
@@ -384,43 +288,8 @@ class App extends React.Component {
                 : <div>{this.state.loading ? 'Loading...' : 'No content.'}</div>
               }
             </div>)
-            : (
-            <div
-              className='wrapper settings'
-              key='settings'>
-              <input ref='pass1' placeholder='new password' type='text' />
-              <input ref='pass2' placeholder='repeat' type='text' />
-              <button onClick={this.updateUser.bind(this)}>update</button>
-              <hr />
-              <table className='admin-table'>
-                <tbody>
-                  {this.state.admins.map((admin) => {
-                    return (
-                      <tr key={admin}>
-                        <td>{admin}</td>
-                        <td>
-                          <div onClick={this.deleteAdmin.bind(this, admin)}>
-                            &times;
-                          </div>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-              <br />
-              <input ref='user' placeholder='username' type='text' />
-              <input ref='pass' placeholder='password' type='text' />
-              <button onClick={this.addUser.bind(this)}>add user</button>
-              <hr />
-              {/* <button
-                className='edit-button'
-                onClick={this.save.bind(this, 'settings')}>
-                save
-              </button> */}
-              <button onClick={this.logout.bind(this)}>log out</button>
-            </div>
-            )}
+            : <Settings />
+          }
         </div>
       </div>
     )
