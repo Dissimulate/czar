@@ -16,10 +16,10 @@ class CMS {
     this.data = low(database || 'data.json', {storage})
     this.users = low('users.json', {storage})
     this.authed = {}
-    this.timeout = 1800000
+    this.timeout = 180000
   }
 
-  checkLogin (req, res) {
+  checkLogin (req, res, redirect) {
     const ip = req.headers['x-forwarded-for'] ||
                req.connection.remoteAddress
 
@@ -31,7 +31,7 @@ class CMS {
         this.authed[ip].time = Date.now() + this.timeout
         return true
       }
-    } else {
+    } else if (redirect) {
       if (this.users('account').find({})) {
         res.sendFile(
           path.resolve(__dirname, '../../public/login.html')
@@ -41,6 +41,8 @@ class CMS {
           path.resolve(__dirname, '../../public/signup.html')
         )
       }
+      return false
+    } else {
       return false
     }
   }
@@ -54,14 +56,14 @@ class CMS {
     )
 
     this.app.get('/admin', (req, res) => {
-      this.checkLogin(req, res) &&
+      this.checkLogin(req, res, true) &&
       res.sendFile(
         path.resolve(__dirname, '../../public/index.html')
       )
     })
 
     this.app.get('/admin/*', (req, res) => {
-      this.checkLogin(req, res) &&
+      this.checkLogin(req, res, true) &&
       res.sendFile(
         path.resolve(__dirname, '../../public/index.html')
       )
@@ -167,7 +169,7 @@ class CMS {
       })
     })
 
-    this.app.get('/admin-logout', jsonParser, (req, res) => {
+    this.app.get('/admin-logout', (req, res) => {
       let ip = req.headers['x-forwarded-for'] ||
                req.connection.remoteAddress
 
@@ -209,13 +211,41 @@ class CMS {
               .remove({user: req.body.user})
         }
 
+        let first = !this.users('account').find({})
+
         this.users('account').push({
           user: req.body.user,
-          hash: hash
+          hash: hash,
+          first: first
         })
 
         res.sendStatus(200)
       })
+    })
+
+    this.app.get('/admin-list', (req, res) => {
+      if (!this.checkLogin(req, res)) {
+        return res.sendStatus(403)
+      }
+
+      let users = this.users.object.account.map((user) => user.user)
+
+      res.json(users)
+    })
+
+    this.app.post('/admin-delete', jsonParser, (req, res) => {
+      if (!this.checkLogin(req, res)) {
+        return res.sendStatus(403)
+      }
+
+      let user = this.users('account').find({user: req.body.user})
+
+      if (!user.first) {
+        this.users('account').remove({user: req.body.user})
+        return res.sendStatus(200)
+      } else {
+        return res.sendStatus(403)
+      }
     })
   }
 }

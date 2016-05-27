@@ -15,7 +15,8 @@ class App extends React.Component {
       posting: false,
       more: true,
       edit: -1,
-      tab: 0
+      tab: 0,
+      admins: []
     }
   }
 
@@ -123,11 +124,29 @@ class App extends React.Component {
     })
   }
 
+  getAdmins () {
+    return window.fetch('/admin-list', {
+      method: 'GET'
+    })
+    .then((response) => {
+      return response.json()
+    })
+    .then((admins) => {
+      this.setState({
+        admins: admins
+      })
+    })
+  }
+
   tab (tab) {
     this.setState({
       tab,
       content: []
-    }, () => this.state.tab < this.state.config.length && this.content())
+    }, () => {
+      this.state.tab < this.state.config.length && this.content()
+
+      tab === this.state.config.length && this.getAdmins()
+    })
   }
 
   edit (edit) {
@@ -221,6 +240,28 @@ class App extends React.Component {
     })
 
     browserHistory.push(`/admin/${this.props.params.page}`)
+  }
+
+  deleteAdmin (admin) {
+    window.fetch('/admin-delete', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        user: admin
+      })
+    })
+    .then((response) => {
+      if (response.status === 200) {
+        window.location.reload()
+      } else {
+        this.setState({
+          error: 'Failed to delete user.'
+        })
+      }
+    })
   }
 
   render () {
@@ -350,13 +391,28 @@ class App extends React.Component {
               <input ref='pass1' placeholder='new password' type='text' />
               <input ref='pass2' placeholder='repeat' type='text' />
               <button onClick={this.updateUser.bind(this)}>update</button>
-              <br />
+              <hr />
+              <table className='admin-table'>
+                <tbody>
+                  {this.state.admins.map((admin) => {
+                    return (
+                      <tr key={admin}>
+                        <td>{admin}</td>
+                        <td>
+                          <div onClick={this.deleteAdmin.bind(this, admin)}>
+                            &times;
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
               <br />
               <input ref='user' placeholder='username' type='text' />
               <input ref='pass' placeholder='password' type='text' />
               <button onClick={this.addUser.bind(this)}>add user</button>
-              <br />
-              <br />
+              <hr />
               {/* <button
                 className='edit-button'
                 onClick={this.save.bind(this, 'settings')}>

@@ -139,3 +139,20 @@ button {
   font-size: 1em;
   vertical-align: middle;
   margin-right: 1em; }
+
+.admin-table div {
+  width: 1em;
+  height: 1em;
+  text-align: center;
+  line-height: 1em;
+  background: #eee;
+  -webkit-border-radius: 3px;
+          border-radius: 3px;
+  color: #888;
+  cursor: pointer; }
+
+hr {
+  margin: 2em 0;
+  height: 1px;
+  border: none;
+  background: #eee; }

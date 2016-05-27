@@ -82,7 +82,8 @@
 	      posting: false,
 	      more: true,
 	      edit: -1,
-	      tab: 0
+	      tab: 0,
+	      admins: []
 	    };
 	    return _this;
 	  }
@@ -196,15 +197,32 @@
 	      });
 	    }
 	  }, {
+	    key: 'getAdmins',
+	    value: function getAdmins() {
+	      var _this5 = this;
+
+	      return window.fetch('/admin-list', {
+	        method: 'GET'
+	      }).then(function (response) {
+	        return response.json();
+	      }).then(function (admins) {
+	        _this5.setState({
+	          admins: admins
+	        });
+	      });
+	    }
+	  }, {
 	    key: 'tab',
 	    value: function tab(_tab) {
-	      var _this5 = this;
+	      var _this6 = this;
 
 	      this.setState({
 	        tab: _tab,
 	        content: []
 	      }, function () {
-	        return _this5.state.tab < _this5.state.config.length && _this5.content();
+	        _this6.state.tab < _this6.state.config.length && _this6.content();
+
+	        _tab === _this6.state.config.length && _this6.getAdmins();
 	      });
 	    }
 	  }, {
@@ -226,7 +244,7 @@
 	  }, {
 	    key: 'addUser',
 	    value: function addUser() {
-	      var _this6 = this;
+	      var _this7 = this;
 
 	      if (!this.refs.user.value || !this.refs.pass.value) {
 	        return;
@@ -246,7 +264,7 @@
 	        if (response.status === 200) {
 	          window.location.reload();
 	        } else {
-	          _this6.setState({
+	          _this7.setState({
 	            error: 'Failed to add user.'
 	          });
 	        }
@@ -255,7 +273,7 @@
 	  }, {
 	    key: 'updateUser',
 	    value: function updateUser() {
-	      var _this7 = this;
+	      var _this8 = this;
 
 	      if (!this.refs.pass1.value || this.refs.pass1.value !== this.refs.pass2.value) return;
 
@@ -273,7 +291,7 @@
 	        if (response.status === 200) {
 	          window.location.reload();
 	        } else {
-	          _this7.setState({
+	          _this8.setState({
 	            error: 'Failed to update user.'
 	          });
 	        }
@@ -307,9 +325,33 @@
 	      _reactRouter.browserHistory.push('/admin/' + this.props.params.page);
 	    }
 	  }, {
+	    key: 'deleteAdmin',
+	    value: function deleteAdmin(admin) {
+	      var _this9 = this;
+
+	      window.fetch('/admin-delete', {
+	        method: 'POST',
+	        headers: {
+	          'Accept': 'application/json',
+	          'Content-Type': 'application/json'
+	        },
+	        body: JSON.stringify({
+	          user: admin
+	        })
+	      }).then(function (response) {
+	        if (response.status === 200) {
+	          window.location.reload();
+	        } else {
+	          _this9.setState({
+	            error: 'Failed to delete user.'
+	          });
+	        }
+	      });
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _this8 = this;
+	      var _this10 = this;
 
 	      var page = this.state.config[this.state.tab];
 
@@ -328,8 +370,8 @@
 	              _reactRouter.Link,
 	              {
 	                to: '/admin/' + page.name,
-	                className: _this8.state.tab === i ? 'selected' : '',
-	                onClick: _this8.tab.bind(_this8, i),
+	                className: _this10.state.tab === i ? 'selected' : '',
+	                onClick: _this10.tab.bind(_this10, i),
 	                key: i },
 	              page.name
 	            );
@@ -356,15 +398,15 @@
 	            page.fields.map(function (field, i) {
 	              return _react2.default.createElement(
 	                'div',
-	                { key: i + _this8.state.edit + _this8.state.content.length },
+	                { key: i + _this10.state.edit + _this10.state.content.length },
 	                _react2.default.createElement('br', null),
 	                field.type === 'textarea' ? _react2.default.createElement('textarea', {
-	                  defaultValue: _this8.state.content[_this8.state.edit] && _this8.state.edit > -1 ? _this8.state.content[_this8.state.edit][field.name] : '',
-	                  disabled: _this8.state.posting,
+	                  defaultValue: _this10.state.content[_this10.state.edit] && _this10.state.edit > -1 ? _this10.state.content[_this10.state.edit][field.name] : '',
+	                  disabled: _this10.state.posting,
 	                  ref: field.name,
 	                  placeholder: field.name }) : _react2.default.createElement('input', {
-	                  defaultValue: _this8.state.content[_this8.state.edit] && _this8.state.edit > -1 ? _this8.state.content[_this8.state.edit][field.name] : '',
-	                  disabled: _this8.state.posting,
+	                  defaultValue: _this10.state.content[_this10.state.edit] && _this10.state.edit > -1 ? _this10.state.content[_this10.state.edit][field.name] : '',
+	                  disabled: _this10.state.posting,
 	                  type: field.type,
 	                  ref: field.name,
 	                  placeholder: field.name }),
@@ -405,7 +447,7 @@
 	                  _reactRouter.Link,
 	                  {
 	                    to: '/admin/' + page.name + '/' + i,
-	                    onClick: _this8.edit.bind(_this8, i),
+	                    onClick: _this10.edit.bind(_this10, i),
 	                    className: 'item', key: i },
 	                  Object.keys(item).map(function (key) {
 	                    if (key !== 'created' && key !== 'published') {
@@ -421,7 +463,7 @@
 	                  _react2.default.createElement(
 	                    'div',
 	                    {
-	                      onClick: _this8.delete.bind(_this8, page.name, i),
+	                      onClick: _this10.delete.bind(_this10, page.name, i),
 	                      className: 'cross' },
 	                    '×'
 	                  )
@@ -449,7 +491,35 @@
 	              { onClick: this.updateUser.bind(this) },
 	              'update'
 	            ),
-	            _react2.default.createElement('br', null),
+	            _react2.default.createElement('hr', null),
+	            _react2.default.createElement(
+	              'table',
+	              { className: 'admin-table' },
+	              _react2.default.createElement(
+	                'tbody',
+	                null,
+	                this.state.admins.map(function (admin) {
+	                  return _react2.default.createElement(
+	                    'tr',
+	                    { key: admin },
+	                    _react2.default.createElement(
+	                      'td',
+	                      null,
+	                      admin
+	                    ),
+	                    _react2.default.createElement(
+	                      'td',
+	                      null,
+	                      _react2.default.createElement(
+	                        'div',
+	                        { onClick: _this10.deleteAdmin.bind(_this10, admin) },
+	                        '×'
+	                      )
+	                    )
+	                  );
+	                })
+	              )
+	            ),
 	            _react2.default.createElement('br', null),
 	            _react2.default.createElement('input', { ref: 'user', placeholder: 'username', type: 'text' }),
 	            _react2.default.createElement('input', { ref: 'pass', placeholder: 'password', type: 'text' }),
@@ -458,8 +528,7 @@
 	              { onClick: this.addUser.bind(this) },
 	              'add user'
 	            ),
-	            _react2.default.createElement('br', null),
-	            _react2.default.createElement('br', null),
+	            _react2.default.createElement('hr', null),
 	            _react2.default.createElement(
 	              'button',
 	              { onClick: this.logout.bind(this) },
