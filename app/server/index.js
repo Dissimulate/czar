@@ -16,7 +16,7 @@ class CMS {
     this.data = low(database || 'data.json', {storage})
     this.users = low('users.json', {storage})
     this.authed = {}
-    this.timeout = 600000
+    this.timeout = 1800000
   }
 
   checkLogin (req, res) {
@@ -72,13 +72,15 @@ class CMS {
     })
 
     this.app.post('/data/get/:page', jsonParser, (req, res) => {
-      const post =
+      let post =
       this.data(req.params.page)
           .chain()
           .filter(req.body.filter || {})
           .orderBy(req.body.sort || 'created', [req.body.order || 'desc'])
           .splice(req.body.from || 0, req.body.limit || Infinity)
           .value()
+
+      post = JSON.parse(JSON.stringify(post))
 
       if (req.body.trunc) {
         post.forEach((page) => {
