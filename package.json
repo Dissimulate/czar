@@ -1,6 +1,6 @@
 {
   "name": "czar",
-  "version": "1.0.11",
+  "version": "1.0.15",
   "description": "A light weight and flexible CMS for node.js with dead simple integration.",
   "main": "./app/server/index.js",
   "scripts": {

@@ -2,10 +2,10 @@
 
 const path = require('path')
 const low = require('lowdb')
-const storage = require('lowdb/file-async')
-const bodyParser = require('body-parser')
-const credential = require('credential')
 const express = require('express')
+const credential = require('credential')
+const bodyParser = require('body-parser')
+const storage = require('lowdb/file-async')
 
 const pw = credential()
 const jsonParser = bodyParser.json()
@@ -176,8 +176,7 @@ class CMS {
       let ip = req.headers['x-forwarded-for'] ||
                req.connection.remoteAddress
 
-      if (!this.checkLogin(req) &&
-          this.users('account').find({})) {
+      if (!this.checkLogin(req) && this.users('account').find({})) {
         return res.sendStatus(403)
       }
 
@@ -186,7 +185,9 @@ class CMS {
       }
 
       if (this.users('account').find({user: req.body.user})) {
-        if (!req.body.update) return res.sendStatus(403)
+        if (!req.body.update) {
+          return res.sendStatus(403)
+        }
       }
 
       pw.hash(req.body.pass, (err, hash) => {

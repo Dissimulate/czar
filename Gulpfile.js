@@ -4,11 +4,18 @@ const fs = require('fs')
 const path = require('path')
 const gulp = require('gulp')
 const sass = require('gulp-sass')
-const webpack = require('webpack-stream')
+const webpack = require('webpack')
 const prefix = require('gulp-autoprefixer')
+const webpackStream = require('webpack-stream')
 
 const BUILD_DIR = path.resolve(__dirname, 'public')
 const APP_DIR = path.resolve(__dirname, 'app')
+
+const production = new webpack.DefinePlugin({
+  'process.env': {
+    NODE_ENV: JSON.stringify('production')
+  }
+})
 
 let nodeModules = {}
 
@@ -29,7 +36,7 @@ gulp.task('styles', () => {
 
 gulp.task('transpile', () => {
   gulp.src(APP_DIR + '/client/index.js')
-    .pipe(webpack({
+    .pipe(webpackStream({
       output: {
         path: BUILD_DIR,
         filename: 'client.js'
@@ -43,12 +50,13 @@ gulp.task('transpile', () => {
             presets: ['es2015', 'stage-0', 'react']
           }
         }]
-      }
+      },
+      plugins: [production]
     }))
     .pipe(gulp.dest(BUILD_DIR))
 
   gulp.src(APP_DIR + '/client/login.js')
-    .pipe(webpack({
+    .pipe(webpackStream({
       output: {
         path: BUILD_DIR,
         filename: 'login.js'
@@ -62,7 +70,8 @@ gulp.task('transpile', () => {
             presets: ['es2015', 'stage-0', 'react']
           }
         }]
-      }
+      },
+      plugins: [production]
     }))
     .pipe(gulp.dest(BUILD_DIR))
 })

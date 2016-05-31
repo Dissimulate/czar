@@ -9,6 +9,10 @@ export default class Settings extends React.Component {
       admins: [],
       error: ''
     }
+
+    this.logout = this.logout.bind(this)
+    this.addUser = this.addUser.bind(this)
+    this.updateUser = this.updateUser.bind(this)
   }
 
   getAdmins () {
@@ -108,13 +112,17 @@ export default class Settings extends React.Component {
     .then(() => window.location.reload())
   }
 
+  componentDidMount () {
+    this.getAdmins()
+  }
+
   render () {
     return (
       <div
         className='wrapper settings'>
         <input ref='pass1' placeholder='new password' type='text' />
         <input ref='pass2' placeholder='repeat' type='text' />
-        <button onClick={this.updateUser.bind(this)}>update</button>
+        <button onClick={this.updateUser}>update</button>
         <hr />
         <table className='admin-table'>
           <tbody>
@@ -135,14 +143,14 @@ export default class Settings extends React.Component {
         <br />
         <input ref='user' placeholder='username' type='text' />
         <input ref='pass' placeholder='password' type='text' />
-        <button onClick={this.addUser.bind(this)}>add user</button>
+        <button onClick={this.addUser}>add user</button>
         <hr />
         {/* <button
           className='edit-button'
           onClick={this.save.bind(this, 'settings')}>
           save
         </button> */}
-        <button onClick={this.logout.bind(this)}>log out</button>
+        <button onClick={this.logout}>log out</button>
       </div>
     )
   }

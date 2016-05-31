@@ -131,8 +131,6 @@ class App extends React.Component {
       content: []
     }, () => {
       this.state.tab < this.state.config.length && this.content()
-
-      tab === this.state.config.length && this.getAdmins()
     })
   }
 
